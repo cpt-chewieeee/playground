@@ -10,7 +10,7 @@ import './index.css'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 const target = document.querySelector('#root')
-
+console.log('what is store', store)
 render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
