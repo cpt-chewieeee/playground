@@ -6,7 +6,9 @@ import {
 	NavDropdown, 
 	MenuItem 
 } from 'react-bootstrap'
-import { push } from 'react-router-redux'
+
+import { history } from '../../store'
+
 const NavHeader = (props) => (
 	<Navbar inverse collapseOnSelect>
 		<Navbar.Header>
@@ -17,8 +19,8 @@ const NavHeader = (props) => (
 		</Navbar.Header>
 		<Navbar.Collapse>
 			<Nav>
-				<NavItem eventKey={1}>Home</NavItem>
-				<NavItem eventKey={2}>Game</NavItem>
+				<NavItem eventKey={1} onClick={() => history.push('/')}>Home</NavItem>
+				<NavItem eventKey={2} onClick={() => history.push('/game')}>Game</NavItem>
 				<NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
 					<MenuItem eventKey={3.1}>Bullshit #1</MenuItem>
 					<MenuItem eventKey={3.2}>Bullshit #2</MenuItem>
@@ -28,7 +30,7 @@ const NavHeader = (props) => (
 				</NavDropdown>
 			</Nav>
 			<Nav pullRight>
-				<NavItem eventKey={1} onClick={() => { console.log('click'); push('/about-us')}}>About Us</NavItem>
+				<NavItem eventKey={1} onClick={() => history.push('/about-us')}>About Us</NavItem>
 				<NavItem eventKey={2}>Support</NavItem>
 			</Nav>
 		</Navbar.Collapse>

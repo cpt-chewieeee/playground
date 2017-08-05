@@ -3,6 +3,8 @@ import { Route } from 'react-router-dom'
 import NavHeader from './NavHeader'
 import Home from '../Home'
 import About from '../About'
+import Game from '../Game'
+
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import PropTypes from 'prop-types'
@@ -15,14 +17,13 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch)
 const App = (props) => {
-	console.log(props)
 	return (
 	  <div>
 	    <NavHeader />
-
 	    <main>
 	      <Route exact path="/" component={Home} />
 	      <Route exact path="/about-us" component={About} />
+	      <Route exact path="/game" component={Game} />
 	    </main>
 	  </div>
 	)

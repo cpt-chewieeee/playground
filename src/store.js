@@ -8,7 +8,9 @@ export const history = createHistory()
 
 const initialState = {
 }
+
 const enhancers = []
+
 const middleware = [
   thunk,
   routerMiddleware(history)
