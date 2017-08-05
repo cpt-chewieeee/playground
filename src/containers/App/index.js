@@ -1,12 +1,18 @@
-import React from 'react';
+import React from 'react'
 import { Route } from 'react-router-dom'
 import NavHeader from './NavHeader'
 import Home from '../Home'
 import About from '../About'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import PropTypes from 'prop-types'
 
-const mapStateToProps = state => ({})
+const mapStateToProps = state => {
+	return {
+		router: state.router,
+		user: state.user
+	}
+}
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch)
 const App = (props) => {
 	console.log(props)
@@ -21,5 +27,7 @@ const App = (props) => {
 	  </div>
 	)
 }
-
+App.propTypes = {
+	router: PropTypes.object.isRequired
+}
 export default connect(mapStateToProps, mapDispatchToProps)(App)
