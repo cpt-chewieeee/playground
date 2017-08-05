@@ -1,13 +1,15 @@
 const sanityCheck = () => new Promise ((resolve, reject) => {
-    console.log(THREE)
+    console.log(window.THREE)
     resolve()
 })
 
-class Game {
+export class Game {
     constructor () {
         sanityCheck()
+        console.log('here')
     }
     init () {
 
     }
 }
+
