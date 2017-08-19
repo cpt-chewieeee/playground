@@ -6,18 +6,24 @@ import { Jumbotron } from 'react-bootstrap'
 import './Game.css'
 class GameView extends Component {
     constructor (props) {
-        super(props)
-        this.game = null
+      super(props)
+      this.game = null
+      this.start = this.start.bind(this)
     }
 
     componentDidMount () {
-        // this.game = new Game({ width: window.innerWidth, height: window.innerHeight }, '#game-start')
-        this.game = new Game({ width: 1024, height: 768 }, '#game-start')
+      // this.game = new Game({ width: window.innerWidth, height: window.innerHeight }, '#game-start')
+      this.game = new Game({ width: 1024, height: 768 }, 'game-start')
+
         
     }
+    start (e) {
+      e.preventDefault()
+      this.game.start()
+      // console.log(this.game)
+    }
     componentWillReceiveProps (nextProps) {
-        console.log(this.game)
-        
+    
 
     }
     render () {
@@ -27,9 +33,7 @@ class GameView extends Component {
             </Jumbotron>
             <hr />
             <Jumbotron>
-                Game page
-                inside
-
+                <button className='btn btn-primary btn-lg btn-block' onClick={this.start}>Start</button>
             </Jumbotron>
         </div>
     }
