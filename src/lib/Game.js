@@ -1,6 +1,5 @@
 import Demo from './Demo'
 
-console.log(Demo)
 var THREE = null
 const sanityCheck = () => new Promise ((resolve, reject) => {
     THREE = window.THREE

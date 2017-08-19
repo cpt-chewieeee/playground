@@ -13,7 +13,10 @@ class GameView extends Component {
 
     componentDidMount () {
       // this.game = new Game({ width: window.innerWidth, height: window.innerHeight }, '#game-start')
-      this.game = new Game({ width: 1024, height: 768 }, 'game-start')
+      
+      console.log()
+      const { clientWidth, clientHeight } = this.refs['game-dom']
+      this.game = new Game({ width: clientWidth, height: clientHeight }, 'game-start')
 
         
     }
@@ -28,8 +31,8 @@ class GameView extends Component {
     }
     render () {
         return <div className='container-fluid'>
-            <Jumbotron>
-                <div className='game-container' id='game-start' />
+            <Jumbotron className='jumbo'>
+                <div ref='game-dom' className='game-container' id='game-start' />
             </Jumbotron>
             <hr />
             <Jumbotron>
