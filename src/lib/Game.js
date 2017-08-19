@@ -65,7 +65,7 @@ export class Game {
         // this.scene.add(this.makeACube())
         // this.scene.add(this.makeASphere())
 
-        Object.keys(Demo).map(key => {
+        Object.keys(Demo).forEach(key => {
           this.scene.add(Demo[key]())
         })
 
