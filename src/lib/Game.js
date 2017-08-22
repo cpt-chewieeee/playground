@@ -1,6 +1,6 @@
 // import Config from './config'
 import Demo from './Demo'
-
+import Eagle from './src/eagle/EAGLE_2.OBJ'
 var THREE = null
 
 const sanityCheck = () => new Promise ((resolve, reject) => {
@@ -64,13 +64,9 @@ export class Game {
       
       return new Promise((resolve, reject) => {
         var loader = new THREE.OBJLoader(manager)
-        loader.load('./model_1.obj', function(object){
-          // object.traverse(function(child){
-          //   if(child instanceof THREE.Mesh){
-          //     child.material.map = texture
-          //   }
-          // })
-          object.position.y = -95
+        loader.load(Eagle, function(object){
+          // object.position.y = -95
+          console.log('what is object', object)
           resolve(object)
         }, function(xhr) {
           var percentageComplete = xhr.loaded / xhr.total * 100
@@ -88,9 +84,9 @@ export class Game {
         // this.scene.add(this.makeACube())
         // this.scene.add(this.makeASphere())
 
-        Object.keys(Demo).forEach(key => {
-          this.scene.add(Demo[key]())
-        })
+        // Object.keys(Demo).forEach(key => {
+        //   this.scene.add(Demo[key]())
+        // })
         this.loadModel().then(object => {
           this.scene.add(object)
         }).catch(err => {
