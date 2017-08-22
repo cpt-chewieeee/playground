@@ -1,8 +1,11 @@
+// import Config from './config'
 import Demo from './Demo'
 
 var THREE = null
+
 const sanityCheck = () => new Promise ((resolve, reject) => {
     THREE = window.THREE
+    console.log(THREE)
     window.THREE !== undefined ? resolve() : reject(new Error('Cannot find threejs'))
 })
 
@@ -32,6 +35,7 @@ export class Game {
           
           this.axisHelper = new THREE.AxisHelper(20)
 
+          this.clock = new THREE.Clock()
         })
         .catch(err => {
           console.error('failed to load threejs', err)
@@ -47,18 +51,38 @@ export class Game {
       this.renderer = null
       this.axisHelper = null
       
-      
+      this.clock = null
+
     }
-    
+    loadModel () {
+      var manager = new THREE.LoadingManager();
+      manager.onProgress = function ( item, loaded, total ) {
 
-    
+        console.log( item, loaded, total );
 
-    
-
-    
-    
+      };
+      
+      return new Promise((resolve, reject) => {
+        var loader = new THREE.OBJLoader(manager)
+        loader.load('./model_1.obj', function(object){
+          // object.traverse(function(child){
+          //   if(child instanceof THREE.Mesh){
+          //     child.material.map = texture
+          //   }
+          // })
+          object.position.y = -95
+          resolve(object)
+        }, function(xhr) {
+          var percentageComplete = xhr.loaded / xhr.total * 100
+          console.log(Math.round(percentageComplete, 2) + `% downloaded`)
+        }, function(xhr) {
+          reject(xhr)
+        })
+      })
+    }
     init () {
       return new Promise ((resolve, reject) => {
+
         this.scene.add(this.axisHelper)
         // this.scene.add(this.getPlane())
         // this.scene.add(this.makeACube())
@@ -67,9 +91,15 @@ export class Game {
         Object.keys(Demo).forEach(key => {
           this.scene.add(Demo[key]())
         })
-
+        this.loadModel().then(object => {
+          this.scene.add(object)
+        }).catch(err => {
+          console.error('error', err)
+        })
         this.camera.position.x = -30
-        this.camera.position.y = 40
+        this.camera.position.y = 30
+
+
         this.camera.position.z = 30
         this.camera.lookAt(this.scene.position)
       
@@ -84,7 +114,10 @@ export class Game {
       })
     }
     start () {
-      this.init().then(() => console.log('success'))
+      return this.init().then(() => {
+        console.log('success')
+        return
+      })
     }
 }
 

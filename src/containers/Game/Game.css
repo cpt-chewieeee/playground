@@ -1,9 +1,17 @@
+.container-fluid {
+  position: relative;
+}
 .jumbo {
-  height: calc(100%);
-  width: calc(100%);
+  height: 100%;
+  width: 100%;
 }
 .game-container {
-    width: 100%;
-    height: 100%;
-    background-color: black;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+.settings {
+  position: absolute;
+  top: 44%;
+  left: 44%;
 }

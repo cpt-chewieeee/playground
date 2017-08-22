@@ -9,24 +9,23 @@ class GameView extends Component {
       super(props)
       this.game = null
       this.start = this.start.bind(this)
+      this.state = {
+        start: false
+      }
     }
 
     componentDidMount () {
       // this.game = new Game({ width: window.innerWidth, height: window.innerHeight }, '#game-start')
-      
-      console.log()
+    
       const { clientWidth, clientHeight } = this.refs['game-dom']
-      this.game = new Game({ width: clientWidth, height: clientHeight }, 'game-start')
-
-        
+      this.game = new Game({ width: clientWidth, height: clientHeight }, 'game-start') 
     }
     start (e) {
       e.preventDefault()
-      this.game.start()
-      // console.log(this.game)
+      this.game.start().then(() => this.setState({ start: true }))
     }
     componentWillReceiveProps (nextProps) {
-    
+      
 
     }
     render () {
@@ -35,9 +34,13 @@ class GameView extends Component {
                 <div ref='game-dom' className='game-container' id='game-start' />
             </Jumbotron>
             <hr />
-            <Jumbotron>
+            {
+              !this.state.start 
+              ? <Jumbotron className='settings'>
                 <button className='btn btn-primary btn-lg btn-block' onClick={this.start}>Start</button>
-            </Jumbotron>
+              </Jumbotron>
+              : null
+            }
         </div>
     }
 }
