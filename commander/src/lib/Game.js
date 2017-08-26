@@ -25,7 +25,7 @@ export class Game {
           this.status = ACTIONS.START
           
           this.scene = new THREE.Scene()
-          this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000)
+          this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000)
           
           this.renderer = new THREE.WebGLRenderer()
         
@@ -65,7 +65,9 @@ export class Game {
       return new Promise((resolve, reject) => {
         var loader = new THREE.OBJLoader(manager)
         loader.load(Eagle, function(object){
-          // object.position.y = -95
+          object.position.y = 95
+          object.position.x = 90
+          object.position.z = 90
           console.log('what is object', object)
           resolve(object)
         }, function(xhr) {
@@ -84,19 +86,19 @@ export class Game {
         // this.scene.add(this.makeACube())
         // this.scene.add(this.makeASphere())
 
-        // Object.keys(Demo).forEach(key => {
-        //   this.scene.add(Demo[key]())
-        // })
+        Object.keys(Demo).forEach(key => {
+          this.scene.add(Demo[key]())
+        })
         this.loadModel().then(object => {
           this.scene.add(object)
         }).catch(err => {
           console.error('error', err)
         })
-        this.camera.position.x = -30
-        this.camera.position.y = 30
+        // this.camera.position.x = -30
+        // this.camera.position.y = 30
 
 
-        this.camera.position.z = 30
+        this.camera.position.z = 250
         this.camera.lookAt(this.scene.position)
       
         // this.scene.add(this.makeAmbientLight())
