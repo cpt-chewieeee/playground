@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "-----server-----"
+
+cd /usr/local/src/server
+npm install
+npm run start

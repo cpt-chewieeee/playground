@@ -1,0 +1,26 @@
+version: '2'
+services:
+  commander:
+    build: commander
+    command: sh /usr/local/bin/start
+    volumes:
+      - ../commander:/usr/local/src/commander
+    ports: 
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+  server:
+    build: server
+    command: bash /usr/local/bin/start
+    volumes:
+      - ../server:/usr/local/src/server
+    environment:
+      - PORT:3030
+      - NODE_ENV=developement
+    ports:
+      - "3030:3030"
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      - "15672:15672"
+      - "5672:5672"

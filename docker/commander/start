@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "_____commander_____"
+cd /usr/local/src/commander
+npm install
+npm run start
+echo "_____commander_____"
