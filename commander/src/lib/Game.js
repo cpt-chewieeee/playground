@@ -220,7 +220,7 @@ export class Game {
             }
             this.main.position.set(this.playerControl.getObject().position.x, this.playerControl.getObject().position.y, this.playerControl.getObject().position.z)
           }
-          const vect3 = new THREE.Vector3( this.main.position.x, this.main.position.y, this.main.position.z )
+          // const vect3 = new THREE.Vector3( this.main.position.x, this.main.position.y, this.main.position.z )
           // this.camera.lookAt(vect3)
           requestAnimationFrame(render)
           this.renderer.render(this.scene, this.camera)
