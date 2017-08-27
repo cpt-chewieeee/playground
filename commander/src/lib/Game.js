@@ -1,5 +1,4 @@
-// import Config from './config'
-// import Demo from './Demo'
+import MainPlayer from './Players/MainPlayer'
 import {
   renderSpotLight,
   renderAmbientLight,
@@ -54,7 +53,7 @@ export class Game {
       this.camera = null
       this.renderer = null
       
-      this.main = null
+      this.mainPlayer = null
       
       this.controlsEnabled = false
       
@@ -69,15 +68,6 @@ export class Game {
 
       this.clock = null
       this.spotLight = null
-    }
-    initPlayer () {
-      console.log('-----adding-----player-----')
-      var cubeGeometry = new THREE.BoxGeometry(4, 4, 4)
-      // var cubeMaterial = new THREE.MeshLambertMaterial({ color: 0x888888 })
-      var cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x888888, wireframe: true })
-      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-      cube.castShadow = true
-      return cube
     }
     initStats () {
       var stats = new STATS()
@@ -99,13 +89,14 @@ export class Game {
         
         this.camera.position.x = 0
         this.camera.position.y = 0
-        this.camera.position.z = 60
+        this.camera.position.z = 0
 
-        this.main = this.initPlayer()
+        this.mainPlayer = new MainPlayer(1, { name: 'me' }, 'BIG_BROTHER')
+        console.log('what is my main =', this.mainPlayer)
         this.playerControl = new THREE.PointerLockControls(this.camera, this.renderer.domElement)
         this.scene.add(this.playerControl.getObject())
 
-        this.scene.add(this.main) // add player last
+        this.scene.add(this.mainPlayer) // add player last
         
         document.addEventListener('keydown', e => {
           switch(e.keyCode) {
@@ -218,7 +209,7 @@ export class Game {
               this.playerControl.getObject().position.y = 10
               this.canJump = true
             }
-            this.main.position.set(this.playerControl.getObject().position.x, this.playerControl.getObject().position.y, this.playerControl.getObject().position.z)
+            this.mainPlayer.position.set(this.playerControl.getObject().position.x, this.playerControl.getObject().position.y, this.playerControl.getObject().position.z)
           }
           // const vect3 = new THREE.Vector3( this.main.position.x, this.main.position.y, this.main.position.z )
           // this.camera.lookAt(vect3)
