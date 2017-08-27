@@ -33,6 +33,10 @@ class GameView extends Component {
         return <div className='container-fluid'>
             <Jumbotron className='jumbo'>
               <div className='hot-zone'>
+                <div>
+                  <div id='stats-output' />
+                  <div id='webgl-output' />
+                </div>
                 <div className='hover-zone' 
                   onMouseEnter={() => this.setState({ showMenu: true })}
                 />

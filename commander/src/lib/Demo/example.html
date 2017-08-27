@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My ThreeJS Demo</title>
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<script src="lib/Three.js"></script>
+		<script type="lib/three.min.js"></script>
+		<script type="lib/BinaryLoader.js"></script>
+		<script>
+			var human = {
+				position: {
+					x : 0,
+					y : 0,
+					z : 0,
+					direction : 0
+				},
+				model : {		
+					objects : new THREE.Object3D(),
+					//jump : false;
+					state   	 : 'stand',
+					motion  	 : 'stand'
+					
+				},
+				camera : {
+					speed : 150,
+					distance : 5,
+					x : 0,
+					y : 0,
+					z : 0
+				}
+			}
+
+			window.addEventListener( 'DOMContentLoaded', function(){
+				var width = window.innerWidth;
+				var height = window.innerHeight;
+				var clock = new THREE.Clock();
+
+				var scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0x000000, 0.00 );
+				
+				scene.add( human.model.objects );
+
+				var camera = new THREE.PerspectiveCamera( 40, width / height, 1, 1000 );
+				scene.add( camera );
+				
+				var light = new THREE.DirectionalLight( 0xffffff, 3 );
+				light.position.set(1, 1, 1).normalize();
+				light.castShadow = true;
+				
+				scene.add( light );
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( width, height );
+				renderer.shadowMapEnabled = true;
+				renderer.shadowMapSoft = true;
+				
+
+				renderer.shadowMapEnabled = true;
+
+
+				document.body.appendChild( renderer.domElement );
+				
+				animate();
+
+		
+				var plane_geo = new THREE.PlaneGeometry(150,150);
+				var plane_mat = new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture( 'img/terrain.jpg' ), color: 0xffffff } );
+				plane_mat.map.repeat.x = 300;
+				plane_mat.map.repeat.y = 300;
+				plane_mat.map.wrapS = THREE.RepeatWrapping;
+				plane_mat.map.wrapT = THREE.RepeatWrapping;
+				var plane = new THREE.Mesh(plane_geo, plane_mat);
+				plane.castShadow = false;
+				plane.receiveShadow = false;
+				scene.add( plane );
+				
+
+				var texture = new THREE.ImageUtils.loadTexture( 'texture/crate.gif' );
+				
+				var mesh_vector = [];
+				var geometry = new THREE.CubeGeometry( 1, 1, 1 );
+				for( var i = 0; i < 50; ++i ){
+
+					mesh_vector[ i ] = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x00ffff, map: texture } ) );
+					mesh_vector[ i ].position.x = Math.random() * i - 15;
+					mesh_vector[ i ].position.y = .5;
+					mesh_vector[ i ].position.z = -1 * i - 3;
+					mesh_vector[ i ].castShadow = true;
+					mesh_vector[ i ].receiveShadow = true;
+					scene.add( mesh_vector[i] );
+				}
+			
+			
+				var robotFrames = {
+					// first, last, fps
+					stand   : [   0,  39,  9, {state : 'stand',  action : false} ],   
+					run     : [  40,  45, 10, {state : 'stand',  action : false} ],  
+					attack  : [  46,  53, 10, {state : 'stand',  action : true}  ],  
+					jump    : [  66,  71,  7, {state : 'stand',  action : true}  ],  
+					taunt   : [  95, 111, 10, {state : 'stand',  action : true}  ],  
+					crstand : [ 135, 153, 10, {state : 'crstand', action : false}],  
+					crwalk  : [ 154, 159,  7, {state : 'crstand', action : false}]   
+					
+				}
+				
+				function changeAction(motion){
+					human.model.motion = motion;
+					human.model.state = robotFrames[motion][3].state;
+					
+					var animMin = robotFrames[motion][0];
+					var animMax = robotFrames[motion][1];
+					var animFps = robotFrames[motion][2];
+					robot_body.time = 0;
+					robot_body.duration = 1000 * (( animMax - animMin ) / animFps);
+					robot_body.setFrameRange( animMin, animMax );
+				}
+				
+				var robot_body;
+				var material = new THREE.MeshLambertMaterial( 
+					{ map: THREE.ImageUtils.loadTexture( 'img/droid_skin.png' ), 
+					ambient: 0x999999, 
+					color: 0xffffff, 
+					specular: 0xffffff, 
+					shininess: 25, 
+					morphTargets: true, 
+					vertexColors: THREE.FaceColors, 
+					shading: THREE.SmoothShading } );
+				var loader = new THREE.JSONLoader();
+				loader.load( 'lib/droid.js', function( geometry ) {
+					robot_body = new THREE.MorphAnimMesh( geometry, material );
+					robot_body.rotation.y = -Math.PI / 2;
+					robot_body.scale.set(.02, .02, .02);
+					robot_body.position.y = .5;
+					robot_body.castShadow = true;
+					robot_body.receiveShadow = true;
+					changeAction('stand');
+					human.model.objects.add( robot_body );
+					//console.log(human.model.objects)
+				} );
+
+			
+			 var timer;
+				document.addEventListener('keydown',function(e){
+					if( !/17|86|32|84/.test(e.keyCode)){ return } //c key
+					if(human.model.state === 'stand'){
+						changeAction('crstand');
+					}else if(human.model.state === 'crstand'){
+						changeAction('stand');
+					}
+					if( e.keyCode === 86 ){
+						changeAction('attack');
+					}
+					if( e.keyCode === 32 ){
+						changeAction('jump');
+						robot_body.position.y = .8; 
+					}
+					if( e.keyCode === 84 ){
+						changeAction('taunt');
+					}
+				}, false);
+				
+			
+				var robotState = {
+					backwards : false,
+					left      : false,
+					right     : false,
+					speed     : .1,
+					moving    : false,
+					forwards  : false,
+					angle     : 0
+				}
+				
+				function move(){
+					if(human.model.motion !== 'run' && human.model.state === 'stand'){
+						changeAction('run');
+					}
+					if(human.model.motion !== 'crwalk' && human.model.state === 'crstand'){
+						changeAction('crwalk');
+					}
+					var speed = robotState.speed;
+					if(human.model.state === 'crstand'){speed *= .5;}
+					if(human.model.state === 'freeze') {speed *= 0;}
+					
+					var direction = robotState.angle;
+					if( robotState.forwards && !robotState.left && !robotState.backwards && !robotState.right){direction +=   0}
+					if( robotState.forwards &&  robotState.left && !robotState.backwards && !robotState.right){direction +=  45}
+					if(!robotState.forwards &&  robotState.left && !robotState.backwards && !robotState.right){direction +=  90}
+					if(!robotState.forwards &&  robotState.left &&  robotState.backwards && !robotState.right){direction += 135}
+					if(!robotState.forwards && !robotState.left &&  robotState.backwards && !robotState.right){direction += 180}
+					if(!robotState.forwards && !robotState.left &&  robotState.backwards &&  robotState.right){direction += 225}
+					if(!robotState.forwards && !robotState.left && !robotState.backwards &&  robotState.right){direction += 270}
+					if( robotState.forwards && !robotState.left && !robotState.backwards &&  robotState.right){direction += 315}
+					
+					human.model.objects.rotation.y = direction * Math.PI / 180;
+					human.position.x -= Math.sin(direction * Math.PI / 180) * speed;
+					human.position.z -= Math.cos(direction * Math.PI / 180) * speed;
+				}
+				
+				
+				document.addEventListener('keydown', function(e){
+					if( !/65|68|83|87/.test(e.keyCode)){ return }
+					if( e.keyCode === 87 ){
+						robotState.forwards     = true;
+						robotState.backwards = false;
+					} else if ( e.keyCode === 83 ){
+						robotState.backwards = true;
+						robotState.forwards     = false;
+					} else if ( e.keyCode === 65 ){
+						robotState.left  = true;
+						robotState.right = false;
+					} else if ( e.keyCode === 68 ){
+						robotState.right = true;
+						robotState.left  = false;
+					}
+					if(!robotState.moving){
+						if(human.model.state === 'stand')  {changeAction('run');}
+						if(human.model.state === 'crstand'){changeAction('crwalk');}
+						robotState.moving = true;
+						move();
+						timer = setInterval( function(){
+							move();
+						}, 1000 / 60);
+					}
+				}, false);
+				
+				document.addEventListener('keyup', function(e){
+					if( !/65|68|83|87|32/.test(e.keyCode)){ return }
+					if( e.keyCode === 87 ){
+						robotState.forwards = false;
+					} else if ( e.keyCode === 83 ){
+						robotState.backwards = false;
+					} else if ( e.keyCode === 65 ){
+						robotState.left = false;
+					} else if ( e.keyCode === 68 ){
+						robotState.right = false;
+					} else if ( e.keyCode === 32 ){
+
+						robot_body.position.y = .5; 
+					}
+					if(!robotState.forwards && !robotState.backwards && !robotState.left && !robotState.right){
+						changeAction(human.model.state);
+						robotState.moving = false;
+						clearInterval(timer);
+					}
+				}, false);
+				
+				
+				
+				
+			  /** camera rotation **/
+				var getElementPosition = function(element) {
+					var top = left = 0;
+					do {
+						top  += element.offsetTop  || 0;
+						left += element.offsetLeft || 0;
+						element =  element.offsetParent;
+					}
+					while (element);
+					return {top: top, left: left};
+				}
+				
+				var pointer = {x : 0, y : 0};
+				document.addEventListener('mousemove', function(e){
+					var mouseX = e.clientX - getElementPosition(renderer.domElement).left;
+					var mouseY = e.clientY - getElementPosition(renderer.domElement).top;
+					pointer.x =   (mouseX / renderer.domElement.width) * 2 - 1;
+					pointer.y = - (mouseY / renderer.domElement.height) * 2 + 1;
+				}, false);
+				
+				var oldPointerX = oldPointerY = 0;
+				document.addEventListener('mousedown', beginTurning, false);
+				function beginTurning() {
+					oldPointerX = pointer.x;
+					oldPointerY = pointer.y;
+					renderer.domElement.addEventListener('mousemove', turn, false);
+					renderer.domElement.addEventListener('mouseup', endTurning, false);
+				}
+				function endTurning() {
+					renderer.domElement.removeEventListener('mousemove', turn, false);
+					renderer.domElement.removeEventListener('mouseup', endTurning, false);
+				}
+				function turn(){
+					human.camera.x += (oldPointerX - pointer.x) * human.camera.speed;
+					human.camera.y += (oldPointerY - pointer.y) * human.camera.speed;
+					if(human.camera.y > 150){
+						human.camera.y = 150;
+					}
+					if(human.camera.y < -150){
+						human.camera.y = -150;
+					}
+					
+					robotState.angle = (human.camera.x / 2) % 360;
+					
+					oldPointerX = pointer.x;
+					oldPointerY = pointer.y;
+				}
+				
+				
+			  /** render **/
+				function animate(){
+					requestAnimationFrame( animate );
+					
+					human.model.objects.position.x = human.position.x;
+					human.model.objects.position.y = human.position.y;
+					human.model.objects.position.z = human.position.z;
+					
+					// camera turn x
+					camera.position.x = human.position.x + human.camera.distance * Math.sin( (human.camera.x) * Math.PI / 360 );
+					camera.position.z = human.position.z + human.camera.distance * Math.cos( (human.camera.x) * Math.PI / 360 );
+					
+					
+					camera.position.y = human.position.y + human.camera.distance * Math.sin( (human.camera.y) * Math.PI / 360 );
+					
+					camera.position.y += 1;
+					//console.log(camera.position.x, camera.position.y, camera.position.z)
+					
+					var vec3 = new THREE.Vector3( human.position.x,  human.position.y,  human.position.z)
+					camera.lookAt( vec3 );
+					
+					// model animation
+					var delta = clock.getDelta();
+					if (robot_body) {
+						var isEndFleame = (robotFrames[human.model.motion][1] === robot_body.currentKeyframe);
+						var isAction = robotFrames[human.model.motion][3].action;
+						
+						if(!isAction || (isAction && !isEndFleame)){
+							robot_body.updateAnimation(1000 * delta);
+						}else if(/freeze/.test(robotFrames[human.model.motion][3].state)){
+							//empty condition
+						}else{
+							changeAction(human.model.state);
+						}
+					}
+					
+					renderer.render( scene, camera );
+				}
+					
+
+			}, false);
+		</script>
+
+	</head>
+<body>
+
+<div class="txtbox">
+	WASD key : Movement<br>
+	T key : Dance<br>
+	L-Ctrl key : Toggle Crouch<br>
+	V key : Shoot (animation)<br>
+	SPACE key : Jump<br>
+	MouseDrag : Move Camera<br>
+
+
+</div>
+
+</body>
+</html>

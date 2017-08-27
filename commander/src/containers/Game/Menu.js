@@ -15,6 +15,10 @@ export default class Menu extends Component {
     switch(this.state.selected) {
       case 'settings':
         return 'Settings page'
+      case 'dev-tools':
+        return (
+          "hello world"
+        )
       case 'home':
       default:
         return (
@@ -45,6 +49,12 @@ export default class Menu extends Component {
             size={40} 
             label={'Settings'} 
             mouseEvent={() => this.setState({ selected: 'settings' })} 
+          />
+          <Button.Buttons 
+            type='thunderbolt' 
+            size={40} 
+            label={'Dev tools'} 
+            mouseEvent={() => this.setState({ selected: 'dev-tools' })} 
           />
         </ul>
         <div className='menu-content'>
