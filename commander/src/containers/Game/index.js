@@ -3,20 +3,21 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Game from '../../lib'
 import { Jumbotron } from 'react-bootstrap'
+import Menu from './Menu'
 import './Game.css'
+// style={{ display: (this.state.showMenu ? 'block' : 'none')}}
 class GameView extends Component {
     constructor (props) {
       super(props)
       this.game = null
       this.start = this.start.bind(this)
       this.state = {
-        start: false
+        start: false,
+        showMenu: false
       }
     }
 
     componentDidMount () {
-      // this.game = new Game({ width: window.innerWidth, height: window.innerHeight }, '#game-start')
-    
       const { clientWidth, clientHeight } = this.refs['game-dom']
       this.game = new Game({ width: clientWidth, height: clientHeight }, 'game-start') 
     }
@@ -31,7 +32,19 @@ class GameView extends Component {
     render () {
         return <div className='container-fluid'>
             <Jumbotron className='jumbo'>
-                <div ref='game-dom' className='game-container' id='game-start' />
+              <div className='hot-zone'>
+                <div className='hover-zone' 
+                  onMouseEnter={() => this.setState({ showMenu: true })}
+                />
+                <div 
+                  className='hover-settings' 
+                  onMouseLeave={() => this.setState({ showMenu: false })}
+                  style={{ display: (this.state.showMenu ? 'block' : 'none')}}
+                >
+                  <Menu />
+                </div>
+              </div>
+              <div ref='game-dom' className='game-container' id='game-start' />
             </Jumbotron>
             <hr />
             {
