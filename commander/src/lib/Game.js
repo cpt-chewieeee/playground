@@ -1,4 +1,4 @@
-import MainPlayer from './Players/MainPlayer'
+import MainPlayer from './Players/MainPlayerCtrl'
 import {
   renderSpotLight,
   renderAmbientLight,
@@ -58,13 +58,6 @@ export class Game {
       this.controlsEnabled = false
       
       this.playerControl = null
-      
-      this.playerVelocity = null
-      this.moveForward = false
-      this.moveLeft = false
-      this.moveBackward = false
-      this.moveRight = false
-      this.canJump = false
 
       this.clock = null
       this.spotLight = null
@@ -85,61 +78,18 @@ export class Game {
         this.scene.add(helper())
         this.scene.add(axisHelper())
         this.scene.add(Plane())
-
         
         this.camera.position.x = 0
         this.camera.position.y = 0
-        this.camera.position.z = 0
+        this.camera.position.z = 60 // 0 | 60
 
         this.mainPlayer = new MainPlayer(1, { name: 'me' }, 'BIG_BROTHER')
-        console.log('what is my main =', this.mainPlayer)
+        console.log('what is mainPlayer', this.mainPlayer)
         this.playerControl = new THREE.PointerLockControls(this.camera, this.renderer.domElement)
         this.scene.add(this.playerControl.getObject())
 
         this.scene.add(this.mainPlayer) // add player last
         
-        document.addEventListener('keydown', e => {
-          switch(e.keyCode) {
-            case 87: // w
-              this.moveForward = true
-              break
-            case 65: // a
-              this.moveLeft = true
-              break
-            case 68: //d
-              this.moveRight = true
-              break
-            case 83: //s
-              this.moveBackward = true
-              break
-            case 32: // space
-              if (this.canJump === true) {
-                this.playerVelocity.y += 350
-              }
-              this.canJump = false
-              e.preventDefault()
-              break
-            default:
-          }
-        }, false)
-        document.addEventListener('keyup', e => {
-          switch(e.keyCode) {
-            case 87: //w
-              this.moveForward = false
-              break
-            case 65: //a
-              this.moveLeft = false
-              break
-            case 68: //d
-              this.moveRight = false
-              break
-            case 83: //s
-              this.moveBackward = false
-              break
-            default:
-          }
-        }, false)
-
         document.getElementById(this.id).appendChild(this.renderer.domElement)
 
         this.renderer.render(this.scene, this.camera)
@@ -191,28 +141,27 @@ export class Game {
           this.stats.update()
           if (this.controlsEnabled) {
             var delta = this.clock.getDelta()
-            this.playerVelocity.x -= this.playerVelocity.x * 10 * delta
-            this.playerVelocity.z -= this.playerVelocity.z * 10 * delta
-            this.playerVelocity.y -= 9.8 * 100 * delta
-            if ( this.moveForward ) this.playerVelocity.z -= 400.0 * delta;
-            if ( this.moveBackward ) this.playerVelocity.z += 400.0 * delta;
+            this.mainPlayer.movements.velocity.x -= this.mainPlayer.movements.velocity.x * delta
+            this.mainPlayer.movements.velocity.z -= this.mainPlayer.movements.velocity.z * delta
+            this.mainPlayer.movements.velocity.y -= 9.8 * 100 * delta
+            if ( this.mainPlayer.movements.forward ) this.mainPlayer.movements.velocity.z -= 400.0 * delta;
+            if ( this.mainPlayer.movements.backward )  this.mainPlayer.movements.velocity.z += 400.0 * delta;
 
-            if ( this.moveLeft ) this.playerVelocity.x -= 400.0 * delta;
-            if ( this.moveRight ) this.playerVelocity.x += 400.0 * delta;
+            if ( this.mainPlayer.movements.left )  this.mainPlayer.movements.velocity.x -= 400.0 * delta;
+            if ( this.mainPlayer.movements.right )  this.mainPlayer.movements.velocity.x += 400.0 * delta;
 
-            this.playerControl.getObject().translateX(this.playerVelocity.x * delta)
-            this.playerControl.getObject().translateY(this.playerVelocity.y * delta)
-            this.playerControl.getObject().translateZ(this.playerVelocity.z * delta)
+            this.playerControl.getObject().translateX( this.mainPlayer.movements.velocity.x * delta)
+            this.playerControl.getObject().translateY( this.mainPlayer.movements.velocity.y * delta)
+            this.playerControl.getObject().translateZ( this.mainPlayer.movements.velocity.z * delta)
 
             if(this.playerControl.getObject().position.y < 10) {
-              this.playerVelocity.y = 0
+              this.mainPlayer.movements.velocity.y = 0
               this.playerControl.getObject().position.y = 10
-              this.canJump = true
+              this.mainPlayer.movements.canJump = true
             }
             this.mainPlayer.position.set(this.playerControl.getObject().position.x, this.playerControl.getObject().position.y, this.playerControl.getObject().position.z)
           }
-          // const vect3 = new THREE.Vector3( this.main.position.x, this.main.position.y, this.main.position.z )
-          // this.camera.lookAt(vect3)
+
           requestAnimationFrame(render)
           this.renderer.render(this.scene, this.camera)
         }

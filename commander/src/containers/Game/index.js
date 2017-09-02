@@ -5,6 +5,7 @@ import Game from '../../lib'
 import { Jumbotron } from 'react-bootstrap'
 import Menu from './Menu'
 import './Game.css'
+
 // style={{ display: (this.state.showMenu ? 'block' : 'none')}}
 class GameView extends Component {
     constructor (props) {
@@ -37,6 +38,7 @@ class GameView extends Component {
                   <div id='stats-output' />
                   <div id='webgl-output' />
                 </div>
+                
                 <div className='hover-zone' 
                   onMouseEnter={() => this.setState({ showMenu: true })}
                 />
@@ -48,16 +50,17 @@ class GameView extends Component {
                   <Menu />
                 </div>
               </div>
+              {
+                !this.state.start 
+                ? <Jumbotron className='settings'>
+                  <button className='btn btn-primary btn-lg btn-block' onClick={this.start}>Start</button>
+                </Jumbotron>
+                : null
+              }
               <div ref='game-dom' className='game-container' id='game-start' />
             </Jumbotron>
             <hr />
-            {
-              !this.state.start 
-              ? <Jumbotron className='settings'>
-                <button className='btn btn-primary btn-lg btn-block' onClick={this.start}>Start</button>
-              </Jumbotron>
-              : null
-            }
+            
         </div>
     }
 }

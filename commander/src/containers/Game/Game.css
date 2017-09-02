@@ -9,7 +9,6 @@
 .hot-zone {
   position: inherit;
   width: 100%;
- 
 }
 .hover-zone, .hover-settings {
   position: absolute;
@@ -39,7 +38,8 @@
 .settings {
   position: absolute;
   top: 44%;
-  left: 44%;
+  left: 44%; 
+  /* width: 91.6% */
 }
 .menu {
   display: flex;
